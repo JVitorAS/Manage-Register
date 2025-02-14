@@ -1,11 +1,12 @@
 import connection as conn
 from datetime import datetime
 
+#Classe de mostrar as tabelas
 class function_show():
     def __init__(self):
         self.connection = conn.get_connection()
         self.cursor = self.connection.cursor()
-
+    #Mostrar a tabela departamento
     @staticmethod
     def get_departments():
         try:
@@ -18,7 +19,7 @@ class function_show():
         except Exception as e:
             print(f"Erro ao buscar departamentos: {e}")
             return None
-
+    #Mostrar a tabela Empregados
     def get_employee():
         try:
             connection = conn.get_connection()
@@ -30,6 +31,8 @@ class function_show():
         except Exception as e:
             print(f"Error ao buscar funcionarios: {e}")
             return None
+
+    #Mostrar ao Usuario a tabela completa
     def get_view():
         try:
             connection = conn.get_connection()
@@ -41,11 +44,14 @@ class function_show():
 
         except Exception as e:
             print(f"Error ao buscar cadastro: {e}")
+
+#Classe para inserir os dados
 class FunctionInsert:
     def __init__(self):
         self.connection = conn.get_connection()
         self.cursor = self.connection.cursor()
 
+    #Inserir os dados do empregado
     def insert_employee(self, name, email, role, salary, admission, name_dept):
         try:
             sql = """INSERT INTO EMPLOYEE (NAME_EMPL, EMAIL, ROLE_EMP, SALARY, ADMISSION_DATE, DEPARTAMENT_ID)
@@ -59,6 +65,7 @@ class FunctionInsert:
             self.cursor.close()
             self.connection.close()
 
+    #Inserir departamento
     def insert_dept(self, dept):
         try:
             connection = conn.get_connection()
@@ -75,7 +82,9 @@ class FunctionInsert:
             self.connection.close()
 
 
+#Controle para inserção de dados
 class ChoseInsert:
+    #Controle de inserção de dados do empregado
     @staticmethod
     def cinsert_employee():
         name = input("Nome do funcionário: ")
@@ -92,6 +101,7 @@ class ChoseInsert:
         employees = inserter.insert_employee(name, email, role, salary, admission, name_dept)
         return employees
 
+    #Inserção de dados para departamento
     @staticmethod
     def cinsert_dept():
         dept = input("Insira o nome do novo departamento: ")
@@ -99,8 +109,10 @@ class ChoseInsert:
         deptr = inserter.insert_dept(dept)
         return deptr
 
+#Classe para deletar
 class DeleteRegister():
 
+    #Deletar algum dado de empregado
     def delete_employee():
         try:
             connection = conn.get_connection()
@@ -118,6 +130,7 @@ class DeleteRegister():
             cursor.close()
             connection.close()
 
+    #Deletar algum dado do departamento
     def delete_derpatmente():
         try:
             connection = conn.get_connection()
@@ -147,6 +160,7 @@ print("-----------------------------------")
 
 sel1 = input("Escolha uma opção:")
 
+#Selecionando a opção Mostrar
 if sel1 == "1":
     print('----Mostrar-----')
     print("--Qual tabela?--")
@@ -157,22 +171,28 @@ if sel1 == "1":
     print("3 - Funci/depart")
     print("----------------")
     sel2 = input("Numero: ")
+    
     if sel2 == "1":
         employee = function_show.get_employee()
         if employee:
             for employee in employee:
                 print(employee)
+                
     elif sel2 == "2":
         departamentos = function_show.get_departments()
         if departamentos:
             for departamento in departamentos:
                 print(departamento)
+                
     elif sel2 == "3":
         view = function_show.get_view()
         for view in view:
             print(view)
+            
     else:
         print("Opção invalida")
+
+#Selecionado opção de inserir
 elif sel1 == "2":
     print('----Inserir-----')
     print("--Qual tabela?--")
@@ -189,6 +209,8 @@ elif sel1 == "2":
         ChoseInsert.cinsert_dept()
     else:
         print("Opção invalida")
+
+#Selecionado a opção de deletar
 elif sel1 == "3":
     print('----Deletar-----')
     print("--Qual tabela?--")
@@ -201,26 +223,28 @@ elif sel1 == "3":
         DeleteRegister.delete_employee()
     elif sel2 == "2":
         DeleteRegister.delete_derpatmente()
+
+#Feito uma função onde está testado um comando de pesquisa no BD apenas no email, porém aqui da para pesquisar email e nome
 else:
     email = input("Digite o Email/Nome: ")
 
     try:
-        connection = conn.get_connection()  # Conectar ao banco
+        connection = conn.get_connection()
         cursor = connection.cursor()
 
         sql = "SELECT * FROM VW_FUNCIONARIOS_DEPARTAMENTOS WHERE EMAIL LIKE %s OR NOME LIKE %s"
-        cursor.execute(sql, ('%' + email + '%', '%' + email + '%'))  # Correção na passagem do parâmetro
+        cursor.execute(sql, ('%' + email + '%', '%' + email + '%'))
 
-        result = cursor.fetchall()  # Pega os resultados
+        result = cursor.fetchall()
 
         if result:
             for row in result:
-                print(row)  # Exibe os funcionários encontrados
+                print(row) 
         else:
             print("Nenhum funcionário encontrado.")
 
     except Exception as e:
         print(f"Erro ao buscar cadastro: {e}")
     finally:
-        cursor.close()  # Fechar cursor
-        connection.close()  # Fechar conexão
+        cursor.close()
+        connection.close()
